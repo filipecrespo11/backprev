@@ -5,4 +5,4 @@ const protect = (req, res, next) => { let token = req.headers.authorization;
      } token = token.split(' ')[1]; jwr.verify(token, process.env.JWT_SECRET,
          (err, decoded) => { if (err) { return res.status(401).json({ message: 'Token inválido' });
          } req.user = decoded; next(); });
-         }; module.exports = protect;
+         };

@@ -9,10 +9,9 @@ rotas.post('/login', login);
 
 // Rota para criar um novo usuário
 rotas.post('/criausuarios', async (req, res) => {
-    const { id_usuario, nome_usuario, username, password } = req.body;
+    const { nome_usuario, username, password } = req.body;
     try {
         const novoUsuario = new usuarios({
-            id_usuario,
             nome_usuario,
             username,
             password
