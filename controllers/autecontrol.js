@@ -18,6 +18,4 @@ res.status(500).json({ message: "Erro ao autenticar usuário" });
   }
 };
 
-module.exports = {
-  login,
-};  
+module.exports = {  login};  

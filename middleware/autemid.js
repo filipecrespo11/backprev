@@ -6,3 +6,4 @@ const protect = (req, res, next) => { let token = req.headers.authorization;
          (err, decoded) => { if (err) { return res.status(401).json({ message: 'Token inválido' });
          } req.user = decoded; next(); });
          };
+module.exports = { protect };

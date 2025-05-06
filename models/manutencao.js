@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
+const computadores = require("./computadores");
+const usuarios = require("./usuarios");
 
 const manutencaoSchema = new mongoose.Schema({
-  id_computador: { type: Number, required: true },
-  id_usuarios: { type: String, required: true },
+  _id: { type: String,},
+  id_computador: computadores.id_computador,
+  id_usuarios: usuarios.id_usuarios,
   chamado: { type: Number, required: true },
   status_manutencao: { type: String, required: true },
   data_manutencao_anterior: { type: Date, required: true },
