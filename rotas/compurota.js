@@ -6,10 +6,10 @@ const rotas = express.Router();
 
 // Rota para criar um novo computador
 rotas.post('/criacomputador', protect, async (req, res) => {
-    const { id_computador, nome_computador, fabricante, modelo, serviceTag, patrimonio, unidade, setor, estado } = req.body;
+    const {  nome_computador, fabricante, modelo, serviceTag, patrimonio, unidade, setor, estado } = req.body;
     try {
         const novoComputador = new computadores({
-            id_computador,
+           
             nome_computador,
             fabricante,
             modelo,

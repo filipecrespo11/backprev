@@ -5,6 +5,7 @@ const cors = require('cors');
 const autecontrol = require('./controllers/autecontrol');
 const manurota = require('./rotas/manurota');
 const auterota = require('./rotas/auterota');
+const compurota = require('./rotas/compurota');
 const bd = require('./config/bd');
 
 const app = express();
@@ -19,8 +20,8 @@ bd();
 
 //rota para autenticação de usuários
 app.use('/auterota', auterota);
-//app.use('/manurota', manurota);
-//app.use('/compurota', compurota);
+app.use('/manurota', manurota);
+app.use('/compurota', compurota);
 
      
 

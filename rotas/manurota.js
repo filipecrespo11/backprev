@@ -45,7 +45,7 @@ rotas.get('/manutencao', protect, async (req, res) => {
 });
 
 // Rota para listar uma manutenção específica pelo ID
-rotas.get('/manutencao/:id', protect, async (req, res) => {
+rotas.get('/manutencao/:_id', protect, async (req, res) => {
     const { id } = req.params;
     try {
         const manutencaoItem = await manutencao.findById(id);
@@ -73,7 +73,7 @@ rotas.get('/manutencao/computador/:id_computador', protect, async (req, res) => 
 });
 
 // Rota para atualizar uma manutenção específica pelo ID
-rotas.put('/manutencao/:id', protect, async (req, res) => {
+rotas.put('/manutencao/:_id', protect, async (req, res) => {
     const { id } = req.params;
     const {
         id_computador,
