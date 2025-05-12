@@ -15,6 +15,8 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
         tipo_manutencao,
         descricao_manutencao
     } = req.body;
+    console.log(req.body);
+    
 
     try {
         const novaManutencao = new manutencao({
@@ -32,6 +34,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar manutenção', error });
     }
+
 });
 
 // Rota para listar todas as manutenções
@@ -59,7 +62,7 @@ rotas.get('/manutencao/:_id', protect, async (req, res) => {
 });
 
 // Rota para listar manutenções por ID do computador
-rotas.get('/manutencao/computador/:id_computador', protect, async (req, res) => {
+rotas.get('/manutencao/computador/:_id', protect, async (req, res) => {
     const { id_computador } = req.params;
     try {
         const manutencaoItem = await manutencao.find({ id_computador });
@@ -110,5 +113,6 @@ rotas.put('/manutencao/:_id', protect, async (req, res) => {
         res.status(500).json({ message: 'Erro ao atualizar manutenção', error });
     }
 });
+
 
 module.exports = rotas;
