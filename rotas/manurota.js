@@ -5,19 +5,7 @@ const rotas = express.Router();
 
 // Rota para criar uma nova manutenção
 rotas.post('/criamanutencao', protect, async (req, res) => {
-    const {
-        id_computador,
-        id_usuarios,
-        chamado,
-        status_manutencao,
-        data_manutencao_anterior,
-        data_manutencao,
-        tipo_manutencao,
-        descricao_manutencao
-    } = req.body;
-    console.log(req.body);
-    
-
+     
     try {
         const novaManutencao = new manutencao({
             id_computador,
