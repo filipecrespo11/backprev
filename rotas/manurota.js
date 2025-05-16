@@ -7,7 +7,7 @@ const rotas = express.Router();
 rotas.post('/criamanutencao', protect, async (req, res) => {
     const {
         id_computador,
-        servicetTag,
+        serviceTag,
         id_usuarios,
         chamado,
         status_manutencao,
@@ -22,7 +22,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
     try {
         const novaManutencao = new ManutencaoModel({
             id_computador,
-            servicetTag,
+            serviceTag,
             id_usuarios,
             chamado,
             status_manutencao,
@@ -81,7 +81,7 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     const { id } = req.params;
     const {
         id_computador,
-        servicetTag,    
+        serviceTag,    
         id_usuarios,
         chamado,
         status_manutencao,
@@ -96,7 +96,7 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
             id,
             {
                 id_computador,
-                servicetag,
+                serviceTag,
                 id_usuarios,
                 chamado,
                 status_manutencao,
