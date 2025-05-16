@@ -1,14 +1,28 @@
 const express = require('express');
-const manutencao = require('../models/manutencao');
+const ManutencaoModel = require('../models/manutencao');
 const { protect } = require('../middlewares/autenmid');
 const rotas = express.Router();
 
 // Rota para criar uma nova manutenção
 rotas.post('/criamanutencao', protect, async (req, res) => {
-     
+    const {
+        id_computador,
+        servicetTag,
+        id_usuarios,
+        chamado,
+        status_manutencao,
+        data_manutencao_anterior,
+        data_manutencao,
+        tipo_manutencao,
+        descricao_manutencao
+    } = req.body;
+    console.log(req.body);
+    
+
     try {
-        const novaManutencao = new manutencao({
+        const novaManutencao = new ManutencaoModel({
             id_computador,
+            servicetTag,
             id_usuarios,
             chamado,
             status_manutencao,
@@ -26,17 +40,16 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
 });
 
 // Rota para listar todas as manutenções
-rotas.get('/manutencao', protect, async (req, res) => {
+rotas.get('/manutencoes', protect, async (req, res) => {
     try {
-        const listaManutencao = await manutencao.find();
+        const listaManutencao = await ManutencaoModel.find();
         res.status(200).json(listaManutencao);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao listar manutenções', error });
     }
 });
-
 // Rota para listar uma manutenção específica pelo ID
-rotas.get('/manutencao/:_id', protect, async (req, res) => {
+rotas.get('/manut/:_id', protect, async (req, res) => {
     const { id } = req.params;
     try {
         const manutencaoItem = await manutencao.findById(id);
@@ -50,24 +63,25 @@ rotas.get('/manutencao/:_id', protect, async (req, res) => {
 });
 
 // Rota para listar manutenções por ID do computador
-rotas.get('/manutencao/computador/:_id', protect, async (req, res) => {
-    const { id_computador } = req.params;
+rotas.get('/manutencoes/por-computador/:id_computador_param', protect, async (req, res) => {
+    const { id_computador_param } = req.params; // Pega o parâmetro da URL
     try {
-        const manutencaoItem = await manutencao.find({ id_computador });
-        if (!manutencaoItem || manutencaoItem.length === 0) {
-            return res.status(404).json({ message: 'Manutenção não encontrada' });
+        const manutencoes = await ManutencaoModel.find({ id_computador: id_computador_param });
+        if (!manutencoes || manutencoes.length === 0) {
+            return res.status(404).json({ message: 'Nenhuma manutenção encontrada para este computador' });
         }
-        res.status(200).json(manutencaoItem);
+        res.status(200).json(manutencoes);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao listar manutenção', error });
+        res.status(500).json({ message: 'Erro ao listar manutenções por computador', error });
     }
 });
 
 // Rota para atualizar uma manutenção específica pelo ID
-rotas.put('/manutencao/:_id', protect, async (req, res) => {
+rotas.put('/manut/:_id', protect, async (req, res) => {
     const { id } = req.params;
     const {
         id_computador,
+        servicetTag,    
         id_usuarios,
         chamado,
         status_manutencao,
@@ -78,10 +92,11 @@ rotas.put('/manutencao/:_id', protect, async (req, res) => {
     } = req.body;
 
     try {
-        const manutencaoItem = await manutencao.findByIdAndUpdate(
+        const manutItem = await manut.findByIdAndUpdate(
             id,
             {
                 id_computador,
+                servicetag,
                 id_usuarios,
                 chamado,
                 status_manutencao,
@@ -93,10 +108,10 @@ rotas.put('/manutencao/:_id', protect, async (req, res) => {
             { new: true }
         );
 
-        if (!manutencaoItem) {
+        if (!manutItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
         }
-        res.status(200).json(manutencaoItem);
+        res.status(200).json(manutItem);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar manutenção', error });
     }
