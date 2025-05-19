@@ -16,7 +16,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
         tipo_manutencao,
         descricao_manutencao
     } = req.body;
-    console.log(req.body);
+    
     
 
     try {
