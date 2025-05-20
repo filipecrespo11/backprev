@@ -40,7 +40,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
 });
 
 // Rota para listar todas as manutenções
-rotas.get('/manutencoes', protect, async (req, res) => {
+rotas.get('/manutencoes', async (res) => {
     try {
         const listaManutencao = await ManutencaoModel.find();
         res.status(200).json(listaManutencao);
