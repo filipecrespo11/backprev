@@ -39,8 +39,18 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
 
 });
 
+rotas.get('/manurota/manutencoes', async (req, res) => {
+    try {
+      const manutencoes = await buscarManutencoesDoBanco(); // Função que busca as manutenções
+      res.status(200).json(manutencoes); // Retorna as manutenções com status 200
+    } catch (error) {
+      console.error('Erro ao buscar manutenções:', error);
+      res.status(500).json({ error: 'Erro ao buscar manutenções' }); // Retorna erro com status 500
+    }
+  });
+
 // Rota para listar todas as manutenções
-rotas.get('/manutencoes', async (res) => {
+rotas.get('/manutencoes', async (req, res) => {
     try {
         const listaManutencao = await ManutencaoModel.find();
         res.status(200).json(listaManutencao);
