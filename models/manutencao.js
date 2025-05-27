@@ -5,6 +5,7 @@ const usuarios = require("./usuarios");
 const manutSchema = new mongoose.Schema({
   id_computador: { type: mongoose.Schema.Types.ObjectId, ref: 'computadores', required: true },
  serviceTag: { type: String, required: true },
+ setor: { type: String, required: true },
   id_usuarios: { type: mongoose.Schema.Types.ObjectId, ref: 'usuarios', required: true   },
   chamado: { type: Number, required: true },
   status_manutencao: { type: String, required: true },

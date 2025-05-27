@@ -8,6 +8,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
     const {
         id_computador,
         serviceTag,
+        setor,
         id_usuarios,
         chamado,
         status_manutencao,
@@ -23,6 +24,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
         const novaManutencao = new ManutencaoModel({
             id_computador,
             serviceTag,
+            setor,
             id_usuarios,
             chamado,
             status_manutencao,
