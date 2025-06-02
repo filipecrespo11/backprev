@@ -36,9 +36,9 @@ rotas.get('/computadores', protect, async (req, res) => {
 });
 // Rota para listar um computador específico pelo ID    
 rotas.get('/computadores/:_id', protect, async (req, res) => {
-    const { id } = req.params;
+    const { _id } = req.params;
     try {
-        const computador = await computadores.findById(id);
+        const computador = await computadores.findById(_id);
         if (!computador) {
             return res.status(404).json({ message: 'Computador não encontrado' });
         }

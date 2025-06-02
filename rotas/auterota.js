@@ -23,4 +23,14 @@ rotas.post('/criausuarios', async (req, res) => {
     }
 }
 );
+
+// Rota para consultar usuários
+rotas.get('/usuarios', async (req, res) => {
+    try {
+        const listaUsuarios = await usuarios.find({});
+        res.status(200).json(listaUsuarios);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao consultar usuários', error });
+    }
+});
     module.exports = rotas;

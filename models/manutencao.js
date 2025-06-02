@@ -7,7 +7,7 @@ const manutSchema = new mongoose.Schema({
  serviceTag: { type: String, required: true },
  setor: { type: String, required: true },
   id_usuarios: { type: mongoose.Schema.Types.ObjectId, ref: 'usuarios', required: true   },
-  chamado: { type: Number, required: true },
+  chamado: { type: Number, required: true, unique: true },
   status_manutencao: { type: String, required: true },
   data_manutencao_anterior: { type: Date, required: true
 },

@@ -1,6 +1,7 @@
 const express = require('express');
 const ManutencaoModel = require('../models/manutencao');
 const { protect } = require('../middlewares/autenmid');
+const manutencao = require('../models/manutencao');
 const rotas = express.Router();
 
 // Rota para criar uma nova manutenção
@@ -54,7 +55,7 @@ rotas.get('/manurota/manutencoes', async (req, res) => {
 // Rota para listar todas as manutenções
 rotas.get('/manutencoes', async (req, res) => {
     try {
-        const listaManutencao = await ManutencaoModel.find();
+        const listaManutencao = await manutencao.find();
         res.status(200).json(listaManutencao);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao listar manutenções', error });
@@ -129,5 +130,19 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     }
 });
 
+// Rota para deletar uma manutenção específica pelo ID
+rotas.get("manurota/manutencao/:id", protect, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const manutItem = await manut.findByIdAndDelete(id);
+        if (!manutItem) {
+            return res.status(404).json({ message: 'Manutenção não encontrada' });
+        }
+        res.status(200).json({ message: 'Manutenção deletada com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao deletar manutenção', error });
+    }   
+}
+);
 
 module.exports = rotas;
