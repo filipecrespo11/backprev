@@ -131,19 +131,32 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     }
 });
 
-// Rota para deletar uma manutenção específica pelo ID
-rotas.get("manurota/manutencao/:id", protect, async (req, res) => {
-    const { id } = req.params;
+// Rota para pegar uma manutenção específica pelo chamado
+rotas.get('/manutencao/servicetag/:serviceTag', async (req, res) => {
+    const { serviceTag } = req.params;
     try {
-        const manutItem = await manut.findByIdAndDelete(id);
-        if (!manutItem) {
+        const manutencaoItem = await ManutencaoModel.findOne({ serviceTag });
+        if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
-        }
-        res.status(200).json({ message: 'Manutenção deletada com sucesso' });
+        }   
+        res.status(200).json(manutencaoItem);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao deletar manutenção', error });
-    }   
+        res.status(500).json({ message: 'Erro ao buscar manutenção pelo chamado', error });
+    }
 }
 );
+
+
+
+rotas.post('/enviaremail', async (req, res) => {
+    const { destinatario, assunto, texto } = req.body;
+    try {
+        await enviarEmail(destinatario, assunto, texto);
+        res.status(200).json({ message: 'E-mail enviado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao enviar e-mail', error });
+    }
+});
+
 
 module.exports = rotas;
