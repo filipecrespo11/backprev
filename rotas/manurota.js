@@ -2,6 +2,7 @@ const express = require('express');
 const ManutencaoModel = require('../models/manutencao');
 const { protect } = require('../middlewares/autenmid');
 const manutencao = require('../models/manutencao');
+const { enviarEmail } = require('../controllers/emailService');
 const rotas = express.Router();
 
 // Rota para criar uma nova manutenção
@@ -76,7 +77,7 @@ rotas.get('/manut/:_id', protect, async (req, res) => {
 });
 
 // Rota para listar manutenções por ID do computador
-rotas.get('/manutencoes/por-computador/:id_computador_param', protect, async (req, res) => {
+rotas.get('/manutencoes/por-computador/:id_computador_param',  async (req, res) => {
     const { id_computador_param } = req.params; // Pega o parâmetro da URL
     try {
         const manutencoes = await ManutencaoModel.find({ id_computador: id_computador_param });
@@ -130,19 +131,32 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     }
 });
 
-// Rota para deletar uma manutenção específica pelo ID
-rotas.get("manurota/manutencao/:id", protect, async (req, res) => {
-    const { id } = req.params;
+// Rota para pegar uma manutenção específica pelo chamado
+rotas.get('/manutencao/servicetag/:serviceTag', async (req, res) => {
+    const { serviceTag } = req.params;
     try {
-        const manutItem = await manut.findByIdAndDelete(id);
-        if (!manutItem) {
+        const manutencaoItem = await ManutencaoModel.findOne({ serviceTag });
+        if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
-        }
-        res.status(200).json({ message: 'Manutenção deletada com sucesso' });
+        }   
+        res.status(200).json(manutencaoItem);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao deletar manutenção', error });
-    }   
+        res.status(500).json({ message: 'Erro ao buscar manutenção pelo chamado', error });
+    }
 }
 );
+
+
+
+rotas.post('/enviaremail', async (req, res) => {
+    const { destinatario, assunto, texto } = req.body;
+    try {
+        await enviarEmail(destinatario, assunto, texto);
+        res.status(200).json({ message: 'E-mail enviado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao enviar e-mail', error });
+    }
+});
+
 
 module.exports = rotas;
