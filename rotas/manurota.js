@@ -62,7 +62,7 @@ rotas.get('/manutencoes', async (req, res) => {
     }
 });
 // Rota para listar uma manutenção específica pelo ID
-rotas.get('/manut/:_id', protect, async (req, res) => {
+rotas.get('/manut/:id', protect, async (req, res) => {
     const { id } = req.params;
     try {
         const manutencaoItem = await manutencao.findById(id);
@@ -130,19 +130,5 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     }
 });
 
-// Rota para deletar uma manutenção específica pelo ID
-rotas.get("manurota/manutencao/:id", protect, async (req, res) => {
-    const { id } = req.params;
-    try {
-        const manutItem = await manut.findByIdAndDelete(id);
-        if (!manutItem) {
-            return res.status(404).json({ message: 'Manutenção não encontrada' });
-        }
-        res.status(200).json({ message: 'Manutenção deletada com sucesso' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao deletar manutenção', error });
-    }   
-}
-);
 
 module.exports = rotas;
