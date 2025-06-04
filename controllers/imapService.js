@@ -1,13 +1,12 @@
 const Imap = require('imap');
 const { simpleParser } = require('mailparser');
-const mongoose = require('mongoose');
 const Manutencao = require('../models/manutencao'); // ajuste para seu model
 
 const imap = new Imap({
   user: process.env.URIusername,
   password: process.env.URIpassword,
-  host: process.env.URIhost,
-  port: 993,
+  host: process.env.URIimaphost, // adicione no .env: URIimaphost=imap.campos.unimed.com.br
+  port: 143 , // adicione no .env: URIimapport=993
   tls: true,
   tlsOptions: { rejectUnauthorized: false }
 });
@@ -29,13 +28,14 @@ imap.once('ready', function() {
         msg.on('body', function(stream) {
           simpleParser(stream, async (err, parsed) => {
             if (err) return;
-            // Exemplo: extrair um código do corpo do e-mail
-            const match = parsed.text.match(/Código:\s*(\w+)/); // ajuste sua regex
+            // Extrai o número do chamado do assunto
+            const regex = /\[Chamado#(\d+)\]/;
+            const match = parsed.subject.match(regex);
             if (match) {
-              const codigo = match[1];
-              // Salvar no banco
-              await Manutencao.create({ codigo });
-              console.log('Código salvo:', codigo);
+              const chamado = match[1];
+              // Salva no banco (ajuste o schema conforme necessário)
+              await Manutencao.create({ chamado });
+              console.log('Chamado salvo:', chamado);
             }
           });
         });
@@ -55,4 +55,4 @@ imap.once('end', function() {
   console.log('Conexão IMAP encerrada');
 });
 
-// Para rodar: require('./controllers/imapService');
+imap.connect();

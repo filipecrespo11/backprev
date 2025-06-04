@@ -5,10 +5,10 @@ const computadoresSchema = new mongoose.Schema({
   fabricante: { type: String, required: true },
   modelo: { type: String, required: true },
   serviceTag: { type: String, required: true, unique: true },
-  patrimonio: { type: Number, required: true, unique: true },
+  patrimonio: { type: Number, required: null, unique: true },
   unidade: { type: String, required: true },
   setor: { type: String, required: true },
-  estado: { type: String, required: true },
+  estado: { type: String, required: null },
 });
 
 module.exports = mongoose.model('computadores', computadoresSchema);
