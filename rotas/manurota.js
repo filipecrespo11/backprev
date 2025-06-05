@@ -3,6 +3,8 @@ const ManutencaoModel = require('../models/manutencao');
 const { protect } = require('../middlewares/autenmid');
 const { enviarEmail } = require('../controllers/emailService');
 const rotas = express.Router();
+const { lerRespostaChamado } = require('../controllers/imapService');
+
 
 // Rota para criar uma nova manutenção
 rotas.post('/criamanutencao', protect, async (req, res) => {
@@ -152,13 +154,16 @@ rotas.get('/manutencao/servicetag/:serviceTag', async (req, res) => {
 });
 
 // Rota para enviar e-mail
+
+
 rotas.post('/enviaremail', async (req, res) => {
-    const { destinatario, assunto, texto, serviceTag } = req.body;
+    const { destinatario, assunto, texto, serviceTag, chamado } = req.body;
     try {
         await enviarEmail(destinatario, assunto, texto, serviceTag);
-        res.status(200).json({ message: 'E-mail enviado com sucesso!' });
+        const resposta = await lerRespostaChamado(chamado);
+        res.status(200).json({ message: 'E-mail enviado e resposta lida!', resposta });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao enviar e-mail', error });
+        res.status(500).json({ message: 'Erro ao enviar e-mail ou ler resposta', error });
     }
 });
 module.exports = rotas;
