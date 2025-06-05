@@ -1,7 +1,6 @@
 const express = require('express');
 const ManutencaoModel = require('../models/manutencao');
 const { protect } = require('../middlewares/autenmid');
-const manutencao = require('../models/manutencao');
 const { enviarEmail } = require('../controllers/emailService');
 const rotas = express.Router();
 
@@ -19,8 +18,6 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
         tipo_manutencao,
         descricao_manutencao
     } = req.body;
-    
-    
 
     try {
         const novaManutencao = new ManutencaoModel({
@@ -40,33 +37,23 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar manutenção', error });
     }
-
 });
-
-rotas.get('/manurota/manutencoes', async (req, res) => {
-    try {
-      const manutencoes = await buscarManutencoesDoBanco(); // Função que busca as manutenções
-      res.status(200).json(manutencoes); // Retorna as manutenções com status 200
-    } catch (error) {
-      console.error('Erro ao buscar manutenções:', error);
-      res.status(500).json({ error: 'Erro ao buscar manutenções' }); // Retorna erro com status 500
-    }
-  });
 
 // Rota para listar todas as manutenções
 rotas.get('/manutencoes', async (req, res) => {
     try {
-        const listaManutencao = await manutencao.find();
+        const listaManutencao = await ManutencaoModel.find();
         res.status(200).json(listaManutencao);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao listar manutenções', error });
     }
 });
+
 // Rota para listar uma manutenção específica pelo ID
 rotas.get('/manut/:id', protect, async (req, res) => {
     const { id } = req.params;
     try {
-        const manutencaoItem = await manutencao.findById(id);
+        const manutencaoItem = await ManutencaoModel.findById(id);
         if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
         }
@@ -77,8 +64,8 @@ rotas.get('/manut/:id', protect, async (req, res) => {
 });
 
 // Rota para listar manutenções por ID do computador
-rotas.get('/manutencoes/por-computador/:id_computador_param',  async (req, res) => {
-    const { id_computador_param } = req.params; // Pega o parâmetro da URL
+rotas.get('/manutencoes/por-computador/:id_computador_param', async (req, res) => {
+    const { id_computador_param } = req.params;
     try {
         const manutencoes = await ManutencaoModel.find({ id_computador: id_computador_param });
         if (!manutencoes || manutencoes.length === 0) {
@@ -91,11 +78,11 @@ rotas.get('/manutencoes/por-computador/:id_computador_param',  async (req, res) 
 });
 
 // Rota para atualizar uma manutenção específica pelo ID
-rotas.put('/manut/:_id', protect, async (req, res) => {
+rotas.put('/manut/:id', protect, async (req, res) => {
     const { id } = req.params;
     const {
         id_computador,
-        serviceTag,    
+        serviceTag,
         id_usuarios,
         chamado,
         status_manutencao,
@@ -106,7 +93,7 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     } = req.body;
 
     try {
-        const manutItem = await manut.findByIdAndUpdate(
+        const manutItem = await ManutencaoModel.findByIdAndUpdate(
             id,
             {
                 id_computador,
@@ -131,32 +118,47 @@ rotas.put('/manut/:_id', protect, async (req, res) => {
     }
 });
 
-// Rota para pegar uma manutenção específica pelo chamado
+// Rota para atualizar o número do chamado pelo serviceTag
+rotas.put('/manutencao/servicetag/:serviceTag', async (req, res) => {
+    const { serviceTag } = req.params;
+    const { chamado } = req.body;
+    try {
+        const manutItem = await ManutencaoModel.findOneAndUpdate(
+            { serviceTag },
+            { chamado },
+            { new: true }
+        );
+        if (!manutItem) {
+            return res.status(404).json({ message: 'Manutenção não encontrada para o serviceTag fornecido' });
+        }
+        res.status(200).json({ message: 'Número do chamado atualizado com sucesso', manutItem });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar número do chamado', error });
+    }
+});
+
+// Rota para buscar manutenção por serviceTag
 rotas.get('/manutencao/servicetag/:serviceTag', async (req, res) => {
     const { serviceTag } = req.params;
     try {
         const manutencaoItem = await ManutencaoModel.findOne({ serviceTag });
         if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
-        }   
+        }
         res.status(200).json(manutencaoItem);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar manutenção pelo chamado', error });
+        res.status(500).json({ message: 'Erro ao buscar manutenção pelo serviceTag', error });
     }
-}
-);
+});
 
-
-
+// Rota para enviar e-mail
 rotas.post('/enviaremail', async (req, res) => {
-    const { destinatario, assunto, texto } = req.body;
+    const { destinatario, assunto, texto, serviceTag } = req.body;
     try {
-        await enviarEmail(destinatario, assunto, texto);
+        await enviarEmail(destinatario, assunto, texto, serviceTag);
         res.status(200).json({ message: 'E-mail enviado com sucesso!' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao enviar e-mail', error });
     }
 });
-
-
 module.exports = rotas;
