@@ -54,14 +54,17 @@ rotas.get('/manutencoes', async (req, res) => {
 // Rota para listar uma manutenção específica pelo ID
 rotas.get('/manut/:id', protect, async (req, res) => {
     const { id } = req.params;
+    console.log(`Buscando manutenção com ID: ${id}`); // <--- Adicione esta linha
     try {
         const manutencaoItem = await ManutencaoModel.findById(id);
+        console.log('Resultado da busca:', manutencaoItem); // <--- Adicione esta linha
         if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
         }
         res.status(200).json(manutencaoItem);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao listar manutenção', error });
+        console.error('Erro na rota /manut/:id:', error); // <--- Adicione ou melhore esta linha
+        res.status(500).json({ message: 'Erro ao listar manutenção', error: error.message }); // Envie error.message para mais detalhes no cliente
     }
 });
 
@@ -80,7 +83,7 @@ rotas.get('/manutencoes/por-computador/:id_computador_param', async (req, res) =
 });
 
 // Rota para atualizar uma manutenção específica pelo ID
-rotas.put('/manut/:id', protect, async (req, res) => {
+rotas.put('/manut/:id', async (req, res) => {
     const { id } = req.params;
     const {
         id_computador,
