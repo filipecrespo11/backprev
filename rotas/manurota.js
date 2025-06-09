@@ -35,7 +35,7 @@ rotas.post('/criamanutencao', protect, async (req, res) => {
             descricao_manutencao
         });
         await novaManutencao.save();
-        res.status(201).json({ message: 'Manutenção criada com sucesso' });
+        res.status(201).json({ message: 'Manutenção criada com sucesso', manutencao: novaManutencao }); // Retorna a manutenção criada
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar manutenção', error });
     }
@@ -160,13 +160,27 @@ rotas.get('/manutencao/servicetag/:serviceTag', async (req, res) => {
 
 
 rotas.post('/enviaremail', async (req, res) => {
-    const { destinatario, assunto, texto, serviceTag, chamado } = req.body;
+    // O campo 'chamado' não é mais esperado no corpo da requisição para esta rota,
+    // pois ele será extraído do e-mail de RESPOSTA.
+    // Adicionamos manutencaoId para identificar o registro de manutenção específico.
+    // Adicionamos emailSubjectId para o ID único no assunto do e-mail.
+    const { destinatario, assunto, texto, serviceTag, manutencaoId, emailSubjectId } = req.body;
     try {
-        await enviarEmail(destinatario, assunto, texto, serviceTag);
-        const resposta = await lerRespostaChamado(chamado);
-        res.status(200).json({ message: 'E-mail enviado e resposta lida!', resposta });
+        // Validação para garantir que os IDs necessários sejam fornecidos.
+        if (!serviceTag || !manutencaoId || !emailSubjectId) {
+            console.error("[manurota.js] Tentativa de chamar /enviaremail sem 'serviceTag', 'manutencaoId' ou 'emailSubjectId'. Body:", req.body);
+            return res.status(400).json({ message: 'Os campos "serviceTag", "manutencaoId" e "emailSubjectId" são obrigatórios.' });
+        }
+
+        // Passa manutencaoId para o serviço de e-mail, para que possa ser incluído no corpo do e-mail.
+        await enviarEmail(destinatario, assunto, texto, serviceTag, manutencaoId);
+
+        // Chama lerRespostaChamado passando serviceTag, manutencaoId (para atualização do BD) e emailSubjectId (para busca no IMAP).
+        const respostaImap = await lerRespostaChamado(serviceTag, manutencaoId, emailSubjectId);
+        res.status(200).json({ message: 'E-mail enviado. Aguardando e processando resposta...', detalhesImap: respostaImap });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao enviar e-mail ou ler resposta', error });
+        console.error("[manurota.js] Erro na rota /enviaremail:", error);
+        res.status(500).json({ message: 'Erro ao enviar e-mail ou processar resposta.', error: error.message });
     }
 });
 module.exports = rotas;

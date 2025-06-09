@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-async function enviarEmail(destinatario, assunto, texto, serviceTag) {
+async function enviarEmail(destinatario, assunto, texto, serviceTag, manutencaoId) {
     try {
         let transporter = nodemailer.createTransport({
             host: process.env.URIhost,
@@ -18,7 +18,7 @@ async function enviarEmail(destinatario, assunto, texto, serviceTag) {
             from: process.env.URIemail,
             to: destinatario || process.env.URIemailfrom,
             subject: assunto,
-            text: `${texto}\nService Tag: ${serviceTag}`
+            text: `${texto}\nService Tag: ${serviceTag}\nManutenção ID: ${manutencaoId}`
         };
 
         const info = await transporter.sendMail(mailOptions);
