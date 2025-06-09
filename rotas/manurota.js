@@ -54,10 +54,10 @@ rotas.get('/manutencoes', async (req, res) => {
 // Rota para listar uma manutenção específica pelo ID
 rotas.get('/manut/:id', protect, async (req, res) => {
     const { id } = req.params;
-    console.log(`Buscando manutenção com ID: ${id}`); // <--- Adicione esta linha
+    // console.log(`Buscando manutenção com ID: ${id}`); 
     try {
         const manutencaoItem = await ManutencaoModel.findById(id);
-        console.log('Resultado da busca:', manutencaoItem); // <--- Adicione esta linha
+        // console.log('Resultado da busca:', manutencaoItem); 
         if (!manutencaoItem) {
             return res.status(404).json({ message: 'Manutenção não encontrada' });
         }

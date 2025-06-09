@@ -4,12 +4,12 @@ const Manutencao = require('../models/manutencao');
 
 // Modificado para receber serviceTagEsperada, manutencaoIdEsperado (para DB) e emailSubjectIdEsperado (para busca no assunto)
 async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emailSubjectIdEsperado, timeoutMs = 300000, intervalMs = 10000) {
-  console.log(`[IMAP Service] Iniciando busca de resposta para Subject ID: ${emailSubjectIdEsperado}, Service Tag: ${serviceTagEsperada}, Manutenção ID (DB): ${manutencaoIdEsperado}, timeout: ${timeoutMs}ms, intervalo: ${intervalMs}ms`);
+  // console.log(`[IMAP Service] Iniciando busca de resposta para Subject ID: ${emailSubjectIdEsperado}, Service Tag: ${serviceTagEsperada}, Manutenção ID (DB): ${manutencaoIdEsperado}, timeout: ${timeoutMs}ms, intervalo: ${intervalMs}ms`);
   const start = Date.now();
 
   async function tentarBuscar() {
     // Log ajustado
-    console.log(`[IMAP Service] Tentando buscar e-mail de resposta com Subject ID: ${emailSubjectIdEsperado} na caixa de entrada.`);
+    // console.log(`[IMAP Service] Tentando buscar e-mail de resposta com Subject ID: ${emailSubjectIdEsperado} na caixa de entrada.`);
     return new Promise((resolve, reject) => {
       const imap = new Imap({
         user: process.env.URIusername,
@@ -56,7 +56,7 @@ async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emai
                       console.error('Erro ao parsear e-mail:', err.message);
                       return rejectMailPromise(err); // Rejeita a promise desta mensagem
                     }                    
-                    console.log(`[IMAP Service] E-mail parseado com sucesso. Assunto: "${parsed.subject}"`);
+                    // console.log(`[IMAP Service] E-mail parseado com sucesso. Assunto: "${parsed.subject}"`);
                     // console.log(`[IMAP Service] Corpo do e-mail (texto): "${parsed.text ? parsed.text.substring(0, 100) + '...' : 'N/A'}"`);
 
                     if (emailEncontradoEProcessado) { // Se já processamos o e-mail relevante, ignoramos os demais deste fetch
@@ -70,7 +70,7 @@ async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emai
                     const matchEmailBySubjectId = parsed.subject?.match(regexEmailSubject);
 
                     if (matchEmailBySubjectId) {
-                      console.log(`[IMAP Service] E-mail correspondente encontrado pelo ID no Assunto: ${emailSubjectIdEsperado}. (Service Tag de contexto: ${serviceTagEsperada}, Manutenção ID para DB: ${manutencaoIdEsperado})`);
+                      // console.log(`[IMAP Service] E-mail correspondente encontrado pelo ID no Assunto: ${emailSubjectIdEsperado}. (Service Tag de contexto: ${serviceTagEsperada}, Manutenção ID para DB: ${manutencaoIdEsperado})`);
                       
                       // Tenta extrair o número do chamado do assunto
                       const regexChamadoAssunto = /\[Chamado#(\d+)\]/i; // Captura o número do chamado
@@ -80,7 +80,7 @@ async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emai
 
                       if (matchChamado && matchChamado[1]) {
                         const chamadoExtraido = matchChamado[1];
-                        console.log(`[IMAP Service] Chamado extraído: ${chamadoExtraido} do assunto: "${parsed.subject}"`);
+                        // console.log(`[IMAP Service] Chamado extraído: ${chamadoExtraido} do assunto: "${parsed.subject}"`);
                         
                         try {
                           // Atualiza a manutenção usando o manutencaoIdEsperado
@@ -92,12 +92,12 @@ async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emai
 
                           if (updatedManutencao) {
                             respostaFinal = `Registro de Manutenção ID ${manutencaoIdEsperado} (Service Tag ${serviceTagEsperada}) atualizado com chamado ${chamadoExtraido}.`;
-                            console.log(`[IMAP Service] ${respostaFinal}`);
+                            // console.log(`[IMAP Service] ${respostaFinal}`);
                             emailEncontradoEProcessado = true; 
                           } else {
                             // Isso seria inesperado se o manutencaoIdEsperado for válido
                             respostaFinal = `Nenhum registro de manutenção encontrado para ID ${manutencaoIdEsperado} para atualizar com chamado ${chamadoExtraido}.`;
-                            console.log(`[IMAP Service] ${respostaFinal}`);
+                            // console.log(`[IMAP Service] ${respostaFinal}`);
                           }
                         } catch (dbError) {
                           console.error('[IMAP Service] Erro ao atualizar registro de manutenção:', dbError.message);
@@ -147,7 +147,7 @@ async function lerRespostaChamado(serviceTagEsperada, manutencaoIdEsperado, emai
     const resultado = await tentarBuscar();
     // Se 'resultado' não for nulo, significa que o e-mail relevante foi encontrado e processado (ou houve tentativa).
     if (resultado !== null) { 
-      console.log(`[IMAP Service] Resultado final para Subject ID ${emailSubjectIdEsperado}, Manutenção ID (DB) ${manutencaoIdEsperado}: ${resultado}`);
+      // console.log(`[IMAP Service] Resultado final para Subject ID ${emailSubjectIdEsperado}, Manutenção ID (DB) ${manutencaoIdEsperado}: ${resultado}`);
       return resultado;
     }
     await new Promise(r => setTimeout(r, intervalMs));
